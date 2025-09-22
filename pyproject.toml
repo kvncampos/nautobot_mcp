@@ -1,0 +1,51 @@
+[project]
+name = "nautobot-mcp"
+version = "0.1.0"
+description = "A Model Context Protocol (MCP) server for interacting with Nautobot APIs using semantic search and dynamic API requests"
+readme = "README.md"
+requires-python = ">=3.11,<3.12"
+authors = [
+    {name = "Kevin Campos", email = "kvncampos@duck.com"},
+]
+maintainers = [
+    {name = "Kevin Campos", email = "kvncampos@duck.com"},
+]
+dependencies = [
+    "chromadb>=1.0.12",
+    "fastmcp>=2.6.1",
+    "httpx>=0.28.1",
+    "jsonref>=1.1.0",
+    "mcp[cli]>=1.9.2",
+    "pydantic>=2.11.5",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "sentence-transformers>=4.1.0",
+]
+
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "-ra --strict-markers --strict-config --disable-warnings -v"
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_functions = ["test_*"]
+python_classes = ["Test*"]
+log_cli = true
+log_cli_level = "INFO"
+log_cli_format = "%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
+log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+
+# Custom markers
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: marks tests as integration tests",
+    "unit: marks tests as unit tests",
+    "offline: marks tests that can run offline",
+    "online: marks tests that require internet connection",
+]
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.3.0",
+    "pytest>=8.4.2",
+    "ruff>=0.13.0",
+]

@@ -1,0 +1,18 @@
+{
+  "custom_repos": [
+    {
+      "name": "organization/repo",
+      "description": "Some Description of this repo.",
+      "priority": 5,
+      "enabled": true,
+      "branch": "main",
+      "file_patterns": [
+        ".py",
+        ".md",
+        ".txt",
+        ".rst",
+        ".json"
+      ]
+    }
+  ]
+}

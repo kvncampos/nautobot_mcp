@@ -1,0 +1,32 @@
+{
+  "official_repos": [
+    {
+      "name": "nautobot/nautobot",
+      "description": "Core Nautobot application.",
+      "priority": 1,
+      "enabled": true,
+      "branch": "develop",
+      "file_patterns": [".py", ".md", ".txt", ".rst", ".yaml", ".yml"]
+    },
+    {
+      "name": "nautobot/pynautobot",
+      "description": "Python API client library for Nautobot.",
+      "priority": 2,
+      "enabled": true,
+      "branch": "develop",
+      "file_patterns": [".py", ".md", ".txt", ".rst"]
+    },
+    {
+      "name": "nautobot/nornir-nautobot",
+      "description": "Nornir inventory plugin for Nautobot.",
+      "priority": 3,
+      "enabled": true,
+      "branch": "develop",
+      "file_patterns": [".py", ".md", ".txt", ".rst", ".yaml", ".yml"]
+    }
+  ],
+  "community_repos": [
+  ],
+  "custom_repos": [
+  ]
+}
