@@ -33,6 +33,7 @@ log_cli = true
 log_cli_level = "INFO"
 log_cli_format = "%(asctime)s [%(levelname)8s] %(name)s: %(message)s"
 log_cli_date_format = "%Y-%m-%d %H:%M:%S"
+asyncio_mode = "auto"
 
 # Custom markers
 markers = [
@@ -47,5 +48,6 @@ markers = [
 dev = [
     "pre-commit>=4.3.0",
     "pytest>=8.4.2",
+    "pytest-asyncio>=1.2.0",
     "ruff>=0.13.0",
 ]
