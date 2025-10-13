@@ -130,7 +130,9 @@ The server will automatically:
 
 ### Integration with VS Code Copilot
 
-Add to your VS Code settings to use with GitHub Copilot:
+Add to your VS Code MCP settings to use with GitHub Copilot:
+1. VS Code: Command Palete:
+2. '>MCP: Open User Configuration'
 
 ```json
 {
