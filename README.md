@@ -134,16 +134,21 @@ Add to your VS Code settings to use with GitHub Copilot:
 
 ```json
 {
-  "github.copilot.chat.tools": [
-    {
-      "name": "nautobot_mcp",
-      "command": "python",
-      "args": ["/path/to/nautobot_mcp/server.py"],
-      "env": {
-        "PYTHONPATH": "/path/to/nautobot_mcp"
-      }
-    }
-  ]
+	"servers": {
+		"nautobot_mcp": {
+			"type": "stdio",
+			"command": "uv",
+			"args": [
+				"run",
+				"--directory",
+				"/path/to/nautobot_mcp/server.py",
+				"python3",
+				"-m",
+				"server"
+			]
+		}
+	},
+	"inputs": []
 }
 ```
 
