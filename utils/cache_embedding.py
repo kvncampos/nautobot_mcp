@@ -6,8 +6,6 @@ from sentence_transformers import SentenceTransformer
 
 # This is used to switch out or download models locally and cache them for local use
 
-hf_models_to_cache = ["facebook/bart-base"]
-
 
 def get_sentence_transformer_model() -> SentenceTransformer:
     """Get a SentenceTransformer model with caching enabled."""
@@ -19,6 +17,8 @@ def get_sentence_transformer_model() -> SentenceTransformer:
 
 
 if __name__ == "__main__":
+    hf_models_to_cache = ["facebook/bart-base"]
+
     cache_folder = Path("backend", "models")
     cache_folder.mkdir(parents=True, exist_ok=True)
 
