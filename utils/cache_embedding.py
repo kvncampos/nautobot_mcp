@@ -4,10 +4,6 @@ from huggingface_hub import snapshot_download
 from path import get_chroma_db_path
 from sentence_transformers import SentenceTransformer
 
-# This is used to switch out or download models locally and cache them for local use
-
-hf_models_to_cache = ["facebook/bart-base"]
-
 
 def get_sentence_transformer_model() -> SentenceTransformer:
     """Get a SentenceTransformer model with caching enabled."""
@@ -21,6 +17,10 @@ def get_sentence_transformer_model() -> SentenceTransformer:
 if __name__ == "__main__":
     cache_folder = Path("backend", "models")
     cache_folder.mkdir(parents=True, exist_ok=True)
+
+    # This is used to switch out or download models locally and cache them for local use
+
+    hf_models_to_cache = ["facebook/bart-base"]
 
     for model in hf_models_to_cache:
         # Download and cache the CodeBERT model
