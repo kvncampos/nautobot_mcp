@@ -40,8 +40,7 @@ theme:
     - content.tabs.link
   icon:
     repo: fontawesome/brands/github
-  logo: assets/logo.png
-  favicon: assets/favicon.png
+    logo: material/router-network
 
 nav:
   - Home: index.md
