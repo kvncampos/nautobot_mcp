@@ -8,8 +8,8 @@ import requests
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from helpers.creds_helper import NautobotCredentialMapping, NautobotEnv
-from utils.config import config
+from helpers.creds_helper import NautobotCredentialMapping, NautobotEnv  # noqa: E402
+from utils.config import config  # noqa: E402
 
 
 class SchemaFetcher:
