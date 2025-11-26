@@ -2,6 +2,16 @@
 
 A Model Context Protocol (MCP) server for interacting with Nautobot APIs using semantic search and dynamic API requests. This server provides intelligent access to Nautobot instances and a comprehensive knowledge base of Nautobot-related repositories.
 
+## 📖 Documentation
+
+**[View Full Documentation →](https://kvncampos.github.io/nautobot_mcp/)**
+
+- [Installation Guide](https://kvncampos.github.io/nautobot_mcp/installation/)
+- [Quick Start](https://kvncampos.github.io/nautobot_mcp/quickstart/)
+- [Architecture](https://kvncampos.github.io/nautobot_mcp/architecture/)
+- [Tools Reference](https://kvncampos.github.io/nautobot_mcp/tools/)
+- [Examples](https://kvncampos.github.io/nautobot_mcp/examples/)
+
 ## 🚀 Features
 
 ### Core Capabilities
@@ -423,9 +433,11 @@ LOG_LEVEL=DEBUG
 
 ## 📞 Support
 
-- Create an issue for bug reports or feature requests
-- Check the `examples/` directory for usage patterns
-- Review the test suite for implementation details
+- 📖 **[Documentation](https://kvncampos.github.io/nautobot_mcp/)** - Comprehensive guides and references
+- 🐛 **[Issue Tracker](https://github.com/kvncampos/nautobot_mcp/issues)** - Bug reports and feature requests
+- 💬 **[Discussions](https://github.com/kvncampos/nautobot_mcp/discussions)** - Questions and community support
+- 📂 **Examples** - Check the `examples/` directory for usage patterns
+- 🧪 **Tests** - Review the test suite for implementation details
 
 ## 🙏 Acknowledgments
 
