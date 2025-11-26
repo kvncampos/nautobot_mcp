@@ -143,7 +143,7 @@ Add to your VS Code MCP settings to use with GitHub Copilot:
 			"args": [
 				"run",
 				"--directory",
-				"/path/to/nautobot_mcp/server.py",
+				"/path/to/nautobot_mcp",
 				"python3",
 				"-m",
 				"server"
