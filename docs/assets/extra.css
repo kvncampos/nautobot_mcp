@@ -1,0 +1,32 @@
+/* Custom CSS for Nautobot MCP Documentation */
+
+:root {
+    --md-primary-fg-color: #4051b5;
+    --md-accent-fg-color: #526cfe;
+}
+
+/* Code blocks */
+.highlight code {
+    font-size: 0.85em;
+}
+
+/* Admonitions */
+.md-typeset .admonition {
+    border-left: 4px solid var(--md-accent-fg-color);
+}
+
+/* Tables */
+.md-typeset table:not([class]) {
+    display: table;
+    width: 100%;
+}
+
+/* Navigation */
+.md-nav__title {
+    font-weight: 600;
+}
+
+/* Better spacing for code */
+.md-typeset pre > code {
+    padding: 1em;
+}
