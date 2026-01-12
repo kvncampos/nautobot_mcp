@@ -56,7 +56,13 @@ async def startup():
 async def mcp_nautobot_openapi_api_request_schema(
     query: str, n_results: int = 5
 ) -> str:
-    """Get Nautobot API endpoint schemas that match your intent. Returns endpoint details including path, method, parameters, and response formats."""
+    """Get Nautobot API endpoint schemas that match your intent. Returns endpoint details including path, method, parameters, and response formats.
+
+    Agent usage:
+    1) Call this tool first with the task stated plainly (e.g., "list devices by name").
+    2) Take the `path` and method from the best match and pass them directly to `mcp_nautobot_dynamic_api_request`.
+    3) Favor list endpoints with filters instead of guessing detail URLs; this avoids 404s when slugs/IDs are unknown.
+    """
     logger.info(
         f"Searching endpoint index for query: '{query}' with n_results={n_results}"
     )
@@ -75,10 +81,31 @@ async def mcp_nautobot_openapi_api_request_schema(
 async def mcp_nautobot_dynamic_api_request(
     method: str, path: str, params: Optional[dict] = None, body: Optional[dict] = None
 ) -> str:
-    """Execute direct HTTP requests to the Nautobot REST API for CRUD operations on network infrastructure data. Use this tool to: 1) Retrieve data (GET) - devices, locations, interfaces, IP addresses, etc., 2) Create new objects (POST) - add devices, create circuits, define custom fields, 3) Update existing objects (PUT/PATCH) - modify device properties, update interface configurations, 4) Delete objects (DELETE) - remove outdated devices, clean up unused data. Always use the API schema tool first to discover correct endpoints and required parameters. Supports filtering, pagination, and bulk operations through query parameters."""
+    """Execute direct HTTP requests to the Nautobot REST API for CRUD operations on network infrastructure data.
+
+    ⚠️ CRITICAL WORKFLOW - YOU MUST FOLLOW THIS ORDER:
+    1. ALWAYS call 'mcp_nautobot_openapi_api_request_schema' FIRST with your goal (e.g., "list devices by name")
+    2. Review the returned 'path' field from the schema response
+    3. THEN call this tool with that exact 'path' value
+
+    DO NOT GUESS ENDPOINT PATHS. If you call this tool without first calling the schema discovery tool, you will likely get 404 errors.
+
+    Agent usage and retry guidance:
+    - Prefer list endpoints with filters (e.g., params {"name": "device_1"}) instead of guessing detail URLs; this reduces 404s when the slug/ID is unknown.
+    - If a request returns 404, re-run the schema tool and retry using the list+filter approach or the exact `url`/`path` provided by the schema response.
+    - Always include the leading `/api/...` path and let this tool handle the host, auth headers, SSL, and timeouts.
+    """
     method = method.upper()
     params = params or {}
     body = body or {}
+
+    # Auto-fix: Ensure path starts with /api/ (common LLM mistake)
+    if not path.startswith("/api/"):
+        original_path = path
+        path = f"/api/{path.lstrip('/')}"
+        logger.warning(
+            f"[PATH FIX] Auto-prepended /api/ to path: '{original_path}' -> '{path}'"
+        )
 
     headers = config.get_headers()
 
@@ -134,7 +161,41 @@ async def mcp_nautobot_dynamic_api_request(
     else:
         raise ValueError(f"Unsupported method: {method}")
 
-    response.raise_for_status()
+    # Handle 404 gracefully - guide the agent to use discovery tool
+    if response.status_code == 404:
+        return json.dumps(
+            {
+                "error": "NOT_FOUND",
+                "status_code": 404,
+                "attempted_path": path,
+                "guidance": (
+                    "The path you requested does not exist. "
+                    "You likely guessed the URL. "
+                    "STOP and call `mcp_nautobot_openapi_api_request_schema` first with your goal "
+                    "(e.g., 'list devices by name') to discover the correct endpoint. "
+                    "Then use the returned `path` with list filters like {'name': 'device_1'} "
+                    "instead of detail URLs."
+                ),
+            },
+            indent=2,
+        )
+
+    # Handle other client errors with helpful context
+    if response.status_code >= 400:
+        try:
+            error_body = response.json()
+        except Exception:
+            error_body = response.text
+        return json.dumps(
+            {
+                "error": f"HTTP_{response.status_code}",
+                "status_code": response.status_code,
+                "attempted_path": path,
+                "response": error_body,
+            },
+            indent=2,
+        )
+
     try:
         data = response.json()
     except Exception:
@@ -144,7 +205,7 @@ async def mcp_nautobot_dynamic_api_request(
 
 
 @mcp_app.tool()
-async def mcp_refresh_endpoint_index() -> str:
+async def mcp_nautobot_refresh_endpoints_index() -> str:
     """Manually refresh the OpenAPI endpoint index from the latest schema."""
     logger.info("Manual endpoint index refresh triggered.")
     endpoint_searcher.initialize_collection()
