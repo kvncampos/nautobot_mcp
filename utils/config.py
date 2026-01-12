@@ -24,7 +24,8 @@ class Config:
     _credentials = NautobotCredentialMapping.get_credentials(NAUTOBOT_ENV)
 
     # API Configuration - Now dynamically set based on environment
-    NAUTOBOT_BASE_URL: str = _credentials["NAUTOBOT_URL"].rstrip("/") + "/api"
+    # Note: Don't append /api here - OpenAPI paths already include it (e.g., /api/v2/devices)
+    NAUTOBOT_BASE_URL: str = _credentials["NAUTOBOT_URL"].rstrip("/")
     NAUTOBOT_TOKEN: str = _credentials["NAUTOBOT_TOKEN"]
     GLOBAL_TOOL_PROMPT: str = (
         _credentials["NAUTOBOT_URL"].rstrip("/") + "/api/swagger.json"

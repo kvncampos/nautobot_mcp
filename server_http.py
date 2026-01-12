@@ -10,6 +10,7 @@ from typing import Optional
 import requests
 import urllib3
 from fastmcp import FastMCP
+from starlette.responses import JSONResponse
 
 from helpers.endpoint_searcher_chroma import EndpointSearcherChroma
 from helpers.nb_kb_v2 import EnhancedNautobotKnowledge
@@ -395,9 +396,40 @@ async def mcp_nautobot_kb_repo_status() -> str:
     return json.dumps(response, indent=2)
 
 
+# Health Check Endpoints
+@mcp_app.custom_route("/health", methods=["GET"])
+async def health_check(request):
+    """HTTP health check endpoint that returns server status."""
+    return JSONResponse(
+        {
+            "status": "healthy",
+            "server": config.SERVER_NAME,
+            "message": "Nautobot MCP Server is running",
+        }
+    )
+
+
+@mcp_app.tool()
+async def mcp_health_check() -> str:
+    """MCP tool for health check that returns server status and uptime information."""
+    return json.dumps(
+        {
+            "status": "healthy",
+            "server": config.SERVER_NAME,
+            "message": "Nautobot MCP Server is running",
+        },
+        indent=2,
+    )
+
+
 async def main():
-    # Use run_async() in async contexts
-    await mcp_app.run_async(transport="streamable-http", port=8000)
+    # Use run_async() with explicit path without trailing slash
+    # This prevents FastAPI from issuing 307 redirects
+    await mcp_app.run_async(
+        transport="streamable-http",
+        port=8000,
+        path="/mcp",  # Explicit path without trailing slash - prevents redirect
+    )
 
 
 if __name__ == "__main__":
