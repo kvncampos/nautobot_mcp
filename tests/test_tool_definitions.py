@@ -215,7 +215,7 @@ class TestDescriptionLengths:
 
     def test_descriptions_have_actionable_content(self):
         """Test that descriptions contain actionable verbs"""
-        actionable_verbs = ["search", "execute", "refresh", "list", "add", "remove", "update", "initialize", "show"]
+        actionable_verbs = ["search", "execute", "refresh", "list", "add", "remove", "update", "initialize", "show", "status"]
 
         descriptions = [
             get_api_request_schema_description(),

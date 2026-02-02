@@ -7,7 +7,7 @@ from typing import Any, Dict
 
 # Tool descriptions optimized for LLM ingestion
 # Best practices:
-# - Keep descriptions under 200 characters where possible
+# - Keep descriptions concise (under 300 characters for optimal LLM comprehension)
 # - Use clear, actionable language
 # - Include specific use cases
 # - Avoid redundancy
