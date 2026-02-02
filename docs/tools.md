@@ -79,8 +79,8 @@ Execute HTTP requests against any Nautobot API endpoint.
 |-----------|------|----------|-------------|
 | `method` | string | Yes | HTTP method: GET, POST, PUT, PATCH, DELETE |
 | `path` | string | Yes | API endpoint path (e.g., `/api/dcim/devices/`) |
-| `params` | object | No | URL query parameters |
-| `data` | object | No | Request body (for POST, PUT, PATCH) |
+| `params` | object | No | URL query parameters (used with GET/DELETE) |
+| `body` | object | No | Request body (used with POST/PUT/PATCH) |
 
 #### Example Usage
 
@@ -103,7 +103,7 @@ Execute HTTP requests against any Nautobot API endpoint.
 {
   "method": "POST",
   "path": "/api/dcim/devices/",
-  "data": {
+  "body": {
     "name": "switch-01",
     "device_type": "cisco-catalyst-3850",
     "site": "main-dc",
@@ -118,7 +118,7 @@ Execute HTTP requests against any Nautobot API endpoint.
 {
   "method": "PATCH",
   "path": "/api/dcim/devices/12345/",
-  "data": {
+  "body": {
     "status": "offline"
   }
 }
@@ -278,17 +278,13 @@ List all repositories configured in the knowledge base.
 
 #### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `repo_type` | string | No | Filter by type: "official", "user", "all" (default: "all") |
+None
 
 #### Example Usage
 
 **Query:**
-```json
-{
-  "repo_type": "all"
-}
+```
+List all repositories
 ```
 
 **Response:**
@@ -298,21 +294,21 @@ List all repositories configured in the knowledge base.
     {
       "name": "nautobot/nautobot",
       "description": "Core Nautobot application",
-      "type": "official",
+      "priority": 1,
       "enabled": true,
-      "documents": 450,
-      "last_updated": "2024-10-14"
+      "branch": "main",
+      "file_patterns": [".py", ".md", ".txt", ".rst"]
     },
     {
       "name": "nautobot/nautobot-plugin-golden-config",
       "description": "Golden Config Plugin",
-      "type": "official",
+      "priority": 2,
       "enabled": true,
-      "documents": 85,
-      "last_updated": "2024-10-12"
+      "branch": "main",
+      "file_patterns": [".py", ".md", ".txt", ".rst"]
     }
   ],
-  "total": 2
+  "total_count": 2
 }
 ```
 
@@ -326,10 +322,8 @@ Add a new repository to the knowledge base.
 
 | Parameter | Type | Required | Description |
 |-----------|------|----------|-------------|
-| `repo` | string | Yes | Repository name (owner/repo) |
+| `repo` | string | Yes | Repository name in format 'owner/name' (e.g., 'nautobot/nautobot') |
 | `description` | string | No | Repository description |
-| `branch` | string | No | Branch to index (default: "main") |
-| `enabled` | boolean | No | Enable indexing (default: true) |
 
 #### Example Usage
 
@@ -337,9 +331,7 @@ Add a new repository to the knowledge base.
 ```json
 {
   "repo": "myorg/nautobot-custom-plugin",
-  "description": "Custom internal plugin",
-  "branch": "main",
-  "enabled": true
+  "description": "Custom internal plugin"
 }
 ```
 
@@ -347,9 +339,7 @@ Add a new repository to the knowledge base.
 ```json
 {
   "status": "success",
-  "message": "Repository added successfully",
-  "repo": "myorg/nautobot-custom-plugin",
-  "indexing_started": true
+  "message": "Added repository: myorg/nautobot-custom-plugin"
 }
 ```
 
