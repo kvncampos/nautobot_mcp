@@ -11,18 +11,6 @@ from fastmcp import FastMCP
 
 from helpers.endpoint_searcher_chroma import EndpointSearcherChroma
 from helpers.nb_kb_v2 import EnhancedNautobotKnowledge
-from helpers.tool_definitions import (
-    get_add_repo_description,
-    get_api_request_schema_description,
-    get_dynamic_api_request_description,
-    get_init_repos_description,
-    get_kb_semantic_search_description,
-    get_list_repos_description,
-    get_refresh_endpoint_index_description,
-    get_remove_repo_description,
-    get_repo_status_description,
-    get_update_repos_description,
-)
 from helpers.tool_handlers import (
     handle_add_repo,
     handle_api_request_schema,
@@ -109,9 +97,7 @@ async def mcp_nautobot_kb_list_repos() -> str:
 
 
 @mcp_app.tool()
-async def mcp_nautobot_kb_add_repo(
-    repo: str, description: Optional[str] = None
-) -> str:
+async def mcp_nautobot_kb_add_repo(repo: str, description: Optional[str] = None) -> str:
     """Add a new GitHub repository to the Nautobot knowledge base for indexing and search."""
     return await handle_add_repo(repo, description)
 

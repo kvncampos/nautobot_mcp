@@ -45,7 +45,9 @@ def get_dynamic_api_request_description() -> str:
 
 def get_refresh_endpoint_index_description() -> str:
     """Get description for refresh endpoint index tool."""
-    return "Manually refresh the OpenAPI endpoint index from the latest Nautobot schema."
+    return (
+        "Manually refresh the OpenAPI endpoint index from the latest Nautobot schema."
+    )
 
 
 def get_kb_semantic_search_description() -> str:

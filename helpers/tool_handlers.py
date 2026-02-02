@@ -223,9 +223,7 @@ async def handle_list_repos() -> str:
     return json.dumps(response, indent=2)
 
 
-async def handle_add_repo(
-    repo: str, description: Optional[str] = None
-) -> str:
+async def handle_add_repo(repo: str, description: Optional[str] = None) -> str:
     """
     Handle repository addition requests.
 

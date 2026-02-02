@@ -8,7 +8,6 @@ from typing import Any, Dict
 
 import mcp.server.stdio
 import mcp.types as types
-import requests
 import urllib3
 from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions

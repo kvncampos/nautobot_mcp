@@ -209,13 +209,24 @@ class TestDescriptionLengths:
 
         for desc in descriptions:
             # Allow up to 300 chars (some may be longer but should be clear)
-            assert (
-                len(desc) < 400
-            ), f"Description too long ({len(desc)} chars): {desc[:100]}..."
+            assert len(desc) < 400, (
+                f"Description too long ({len(desc)} chars): {desc[:100]}..."
+            )
 
     def test_descriptions_have_actionable_content(self):
         """Test that descriptions contain actionable verbs"""
-        actionable_verbs = ["search", "execute", "refresh", "list", "add", "remove", "update", "initialize", "show", "status"]
+        actionable_verbs = [
+            "search",
+            "execute",
+            "refresh",
+            "list",
+            "add",
+            "remove",
+            "update",
+            "initialize",
+            "show",
+            "status",
+        ]
 
         descriptions = [
             get_api_request_schema_description(),

@@ -1,0 +1,16 @@
+# Ruff configuration
+# https://docs.astral.sh/ruff/configuration/
+
+[lint]
+# Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default
+select = ["E", "F", "W", "I"]
+
+# Allow longer lines for strings and comments since:
+# 1. Tool descriptions need to be concise for LLM ingestion
+# 2. Breaking strings hurts readability
+ignore = ["E501"]
+
+[format]
+# Use Black-compatible formatting
+indent-style = "space"
+quote-style = "double"
