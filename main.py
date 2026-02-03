@@ -45,7 +45,9 @@ async def initialize_components() -> tuple[
     """Initialize shared components used by both transport modes.
 
     Returns:
-        tuple: (endpoint_searcher, nautobot_kb) instances
+        tuple: A tuple containing (endpoint_searcher, nautobot_kb) in that order.
+            - endpoint_searcher: EndpointSearcherChroma instance for API endpoint search
+            - nautobot_kb: EnhancedNautobotKnowledge instance for knowledge base operations
     """
     logger.info("Initializing Nautobot MCP Server components...")
 

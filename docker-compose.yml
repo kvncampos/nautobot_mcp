@@ -11,6 +11,8 @@ services:
       - .env
     
     # Additional environment variables for Docker
+    # Note: These values override defaults set in the Dockerfile
+    # Values from .env file are loaded first, then these can override them
     environment:
       # Transport mode: stdio or http
       - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
