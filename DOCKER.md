@@ -11,6 +11,20 @@ This guide will help you get the Nautobot MCP server running with Docker in minu
 
 ## Quick Start
 
+### Prerequisites Validation
+
+Run the validation script to check your environment:
+```bash
+./validate-docker.sh
+```
+
+This script will check:
+- Docker and Docker Compose installation
+- Docker daemon status
+- Environment configuration
+- Disk space availability
+- Existing volumes
+
 ### 1. Clone and Configure
 
 ```bash
