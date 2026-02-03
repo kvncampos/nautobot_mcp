@@ -1,0 +1,91 @@
+services:
+  nautobot-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nautobot-mcp:latest
+    container_name: nautobot-mcp-server
+    
+    # Environment variables - loaded from .env file
+    env_file:
+      - .env
+    
+    # Additional environment variables for Docker
+    environment:
+      # Transport mode: stdio or http
+      - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
+      - MCP_PORT=${MCP_PORT:-8000}
+      
+      # Override these if needed
+      - PYTHONUNBUFFERED=1
+      - TOKENIZERS_PARALLELISM=false
+    
+    # Port mapping (only relevant for HTTP mode)
+    ports:
+      - "${MCP_PORT:-8000}:8000"
+    
+    # Volume mounts for data persistence
+    volumes:
+      # ChromaDB data persistence
+      - chroma-data:/app/backend/chroma_db
+      # Model cache persistence (sentence transformers)
+      - model-cache:/app/backend/models
+      # Optional: Mount local config for development
+      # - ./config:/app/config:ro
+      # Optional: Mount .env file if not using env_file
+      # - ./.env:/app/.env:ro
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Command override examples:
+    # For stdio mode (default):
+    # command: ["--mode", "stdio"]
+    # 
+    # For HTTP mode:
+    # command: ["--mode", "http", "--port", "8000"]
+    command: ["--mode", "${MCP_TRANSPORT:-stdio}", "--port", "${MCP_PORT:-8000}"]
+    
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+    
+    # Health check (for HTTP mode)
+    healthcheck:
+      test: >
+        if [ "$MCP_TRANSPORT" = "http" ]; then
+          python -c "import urllib.request; urllib.request.urlopen('http://localhost:${MCP_PORT}/health').read()"
+        else
+          exit 0
+        fi
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+# Named volumes for data persistence
+volumes:
+  chroma-data:
+    driver: local
+    name: nautobot-mcp-chroma
+  model-cache:
+    driver: local
+    name: nautobot-mcp-models
+
+# Network configuration (optional)
+networks:
+  default:
+    name: nautobot-mcp-network
