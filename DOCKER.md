@@ -51,9 +51,6 @@ docker-compose ps
 
 # Follow logs
 docker-compose logs -f
-
-# Check health (HTTP mode only)
-curl http://localhost:8000/health
 ```
 
 ## Common Operations

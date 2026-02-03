@@ -84,9 +84,6 @@ temp/
 Thumbs.db
 .DS_Store
 
-# Lock files (already copied separately)
-uv.lock
-
 # Misc
 *.bak
 *.orig

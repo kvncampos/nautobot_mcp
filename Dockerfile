@@ -62,14 +62,6 @@ USER mcpuser
 # Expose HTTP port (only used in HTTP mode)
 EXPOSE 8000
 
-# Health check for HTTP mode
-HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
-    CMD if [ "$MCP_TRANSPORT" = "http" ]; then \
-        python -c "import urllib.request; urllib.request.urlopen('http://localhost:${MCP_PORT}/health').read()"; \
-    else \
-        exit 0; \
-    fi
-
 # Default entrypoint
 ENTRYPOINT ["python", "main.py"]
 

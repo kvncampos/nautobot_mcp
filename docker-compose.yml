@@ -44,7 +44,9 @@ services:
     # 
     # For HTTP mode:
     # command: ["--mode", "http", "--port", "8000"]
-    command: ["--mode", "${MCP_TRANSPORT:-stdio}", "--port", "${MCP_PORT:-8000}"]
+    # 
+    # Note: Command uses environment variables set above
+    # To override, specify command explicitly without variables
     
     # Resource limits (adjust based on your needs)
     deploy:
@@ -62,19 +64,6 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
-    
-    # Health check (for HTTP mode)
-    healthcheck:
-      test: >
-        if [ "$MCP_TRANSPORT" = "http" ]; then
-          python -c "import urllib.request; urllib.request.urlopen('http://localhost:${MCP_PORT}/health').read()"
-        else
-          exit 0
-        fi
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 40s
 
 # Named volumes for data persistence
 volumes:
