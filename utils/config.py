@@ -35,7 +35,7 @@ class Config:
 
     # Server Configuration
     API_PREFIX: str = os.getenv("API_PREFIX", "nautobot_openapi")
-    SERVER_NAME: str = os.getenv("SERVER_NAME", "any_openapi")
+    SERVER_NAME: str = os.getenv("SERVER_NAME", "nautobot_mcp_server")
     SERVER_VERSION: str = os.getenv("SERVER_VERSION", "0.2.0")
 
     # Logging Configuration

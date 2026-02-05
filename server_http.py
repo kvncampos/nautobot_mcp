@@ -8,6 +8,8 @@ from typing import Optional
 
 import urllib3
 from fastmcp import FastMCP
+from starlette.requests import Request
+from starlette.responses import JSONResponse
 
 from helpers.endpoint_searcher_chroma import EndpointSearcherChroma
 from helpers.nb_kb_v2 import EnhancedNautobotKnowledge
@@ -42,6 +44,13 @@ nautobot_kb = EnhancedNautobotKnowledge()
 
 # Create FastMCP app
 mcp_app = FastMCP(config.SERVER_NAME)
+
+
+# Health check endpoint
+@mcp_app.custom_route("/health", methods=["GET"])
+async def health_check(request: Request) -> JSONResponse:
+    """Health check endpoint for container orchestration and monitoring."""
+    return JSONResponse({"status": "healthy", "service": config.SERVER_NAME})
 
 
 # Initialize at startup
