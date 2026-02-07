@@ -12,6 +12,7 @@ from starlette.requests import Request
 from starlette.responses import JSONResponse
 
 from helpers.endpoint_searcher_chroma import EndpointSearcherChroma
+from helpers.graph_reranker import GraphReranker
 from helpers.nb_kb_v2 import EnhancedNautobotKnowledge
 from helpers.tool_handlers import (
     handle_add_repo,
@@ -40,6 +41,7 @@ os.environ["POSTHOG_API_KEY"] = config.POSTHOG_API_KEY
 
 # Initialize components
 endpoint_searcher = EndpointSearcherChroma()
+graph_reranker = GraphReranker()
 nautobot_kb = EnhancedNautobotKnowledge()
 
 # Create FastMCP app
@@ -62,6 +64,16 @@ async def startup():
     endpoint_searcher.initialize_collection()
     logger.info("Endpoint index refreshed.")
 
+    # Check graph re-ranker health
+    if config.GRAPHITI_ENABLED:
+        health = graph_reranker.health_check()
+        if health["neo4j_connected"] and health["graphiti_initialized"]:
+            logger.info("Graph re-ranker initialized successfully")
+        else:
+            logger.warning(
+                f"Graph re-ranker initialization issues: {health.get('errors', [])}"
+            )
+
     # Refresh Nautobot KB index at startup
     logger.info("Refreshing Nautobot KB index at startup...")
     nautobot_kb.initialize_all_repositories()
@@ -71,10 +83,10 @@ async def startup():
 # API Tools
 @mcp_app.tool()
 async def mcp_nautobot_openapi_api_request_schema(
-    query: str, n_results: int = 5
+    query: str, n_results: int = config.DEFAULT_SEARCH_RESULTS
 ) -> str:
     """Search for Nautobot API endpoints using natural language. Returns endpoint paths, methods, parameters, and response formats. Use this before making API requests to find the correct endpoint."""
-    return await handle_api_request_schema(query, n_results, endpoint_searcher)
+    return await handle_api_request_schema(query, n_results, endpoint_searcher, graph_reranker)
 
 
 @mcp_app.tool()

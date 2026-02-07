@@ -13,6 +13,7 @@ from mcp.server import NotificationOptions, Server
 from mcp.server.models import InitializationOptions
 
 from helpers.endpoint_searcher_chroma import EndpointSearcherChroma
+from helpers.graph_reranker import GraphReranker
 from helpers.nb_kb_v2 import EnhancedNautobotKnowledge
 from helpers.tool_definitions import (
     get_add_repo_description,
@@ -67,11 +68,24 @@ async def main():
 
     server = Server(config.API_PREFIX)
     endpoint_searcher = EndpointSearcherChroma()
+    graph_reranker = GraphReranker()
     nautobot_kb = EnhancedNautobotKnowledge()
+
     # Refresh endpoint index at startup
     logger.info("Refreshing endpoint index at startup...")
     endpoint_searcher.initialize_collection()
     logger.info("Endpoint index refreshed.")
+
+    # Check graph re-ranker health
+    if config.GRAPHITI_ENABLED:
+        health = graph_reranker.health_check()
+        if health["neo4j_connected"] and health["graphiti_initialized"]:
+            logger.info("Graph re-ranker initialized successfully")
+        else:
+            logger.warning(
+                f"Graph re-ranker initialization issues: {health.get('errors', [])}"
+            )
+
     # Refresh Nautobot KB index at startup
     logger.info("Refreshing Nautobot KB index at startup...")
     # Optionally set repo_list here, e.g. nautobot_kb.repo_list = ["nautobot/nautobot"]
@@ -158,7 +172,7 @@ async def main():
                 query = inputs["query"]
                 n_results = inputs.get("n_results", config.DEFAULT_SEARCH_RESULTS)
                 response_text = await handle_api_request_schema(
-                    query, n_results, endpoint_searcher
+                    query, n_results, endpoint_searcher, graph_reranker
                 )
                 return [types.TextContent(type="text", text=response_text)]
 
