@@ -1,5 +1,12 @@
 # Nautobot MCP Server
 
+[![CI](https://github.com/kvncampos/nautobot_mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/kvncampos/nautobot_mcp/actions/workflows/ci.yml)
+[![Documentation](https://github.com/kvncampos/nautobot_mcp/actions/workflows/docs.yml/badge.svg)](https://github.com/kvncampos/nautobot_mcp/actions/workflows/docs.yml)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/kvncampos/nautobot_mcp)](https://github.com/kvncampos/nautobot_mcp/releases)
+[![GitHub](https://img.shields.io/github/license/kvncampos/nautobot_mcp)](https://github.com/kvncampos/nautobot_mcp/blob/main/LICENSE)
+[![Python Version](https://img.shields.io/badge/python-3.11-blue.svg)](https://www.python.org/downloads/)
+[![Code style: ruff](https://img.shields.io/badge/code%20style-ruff-000000.svg)](https://github.com/astral-sh/ruff)
+
 A Model Context Protocol (MCP) server for interacting with Nautobot APIs using semantic search and dynamic API requests. This server provides intelligent access to Nautobot instances and a comprehensive knowledge base of Nautobot-related repositories.
 
 ## 📖 Documentation
