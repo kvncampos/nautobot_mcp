@@ -6,9 +6,16 @@ This guide helps you upgrade from the ChromaDB-only version to the enhanced Neo4
 
 ## What's Changing
 
-### Search Behavior
+### Search Behavior ⚠️ BREAKING CHANGE
+
 - **Before**: Returns 5 results from ChromaDB
 - **After**: Returns 3 results, re-ranked using graph intelligence
+
+**Impact**: Existing users will see fewer results by default. To maintain old behavior:
+```bash
+# In .env
+DEFAULT_SEARCH_RESULTS=5
+```
 
 ### Configuration
 - **New**: Neo4j and Graphiti configuration required

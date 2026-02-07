@@ -63,21 +63,25 @@ class GraphReranker:
             logger.info("Neo4j connection established successfully")
 
             # Initialize Graphiti
-            self.graphiti = Graphiti(
-                neo4j_uri=self.neo4j_uri,
-                neo4j_user=self.neo4j_user,
-                neo4j_password=self.neo4j_password,
-                neo4j_database=self.neo4j_database,
-            )
-            logger.info("Graphiti initialized successfully")
+            try:
+                self.graphiti = Graphiti(
+                    neo4j_uri=self.neo4j_uri,
+                    neo4j_user=self.neo4j_user,
+                    neo4j_password=self.neo4j_password,
+                    neo4j_database=self.neo4j_database,
+                )
+                logger.info("Graphiti initialized successfully")
+            except Exception as e:
+                logger.error(f"Failed to initialize Graphiti: {e}")
+                # Close driver since Graphiti failed
+                if self.driver:
+                    self.driver.close()
+                self.enabled = False
+                self.driver = None
+                self.graphiti = None
 
         except Neo4jError as e:
             logger.error(f"Failed to connect to Neo4j: {e}")
-            self.enabled = False
-            self.driver = None
-            self.graphiti = None
-        except Exception as e:
-            logger.error(f"Failed to initialize Graphiti: {e}")
             self.enabled = False
             self.driver = None
             self.graphiti = None
@@ -404,11 +408,12 @@ class GraphReranker:
                     """
                     MERGE (e:Endpoint {id: $endpoint_id})
                     SET e.usage_count = COALESCE(e.usage_count, 0) + 1,
-                        e.last_used_timestamp = datetime(),
+                        e.last_used_timestamp = $timestamp,
                         e.success_count = COALESCE(e.success_count, 0) + $success_inc,
                         e.failure_count = COALESCE(e.failure_count, 0) + $failure_inc
                     """,
                     endpoint_id=endpoint_id,
+                    timestamp=datetime.now().isoformat(),
                     success_inc=1 if success else 0,
                     failure_inc=0 if success else 1,
                 )
@@ -461,10 +466,11 @@ class GraphReranker:
                         MERGE (e2:Endpoint {id: $related_id})
                         MERGE (e1)-[r:USED_WITH]-(e2)
                         SET r.weight = COALESCE(r.weight, 0) + 1,
-                            r.last_used = datetime()
+                            r.last_used = $timestamp
                         """,
                         endpoint_id=endpoint_id,
                         related_id=related_id,
+                        timestamp=datetime.now().isoformat(),
                     )
         except Exception as e:
             logger.error(f"Error updating relationships: {e}")

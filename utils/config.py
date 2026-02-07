@@ -43,6 +43,8 @@ class Config:
 
     # ChromaDB Configuration
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
+    # NOTE: DEFAULT_SEARCH_RESULTS changed from 5 to 3 for graph-enhanced search
+    # Set explicitly in .env to override (e.g., DEFAULT_SEARCH_RESULTS=5 for old behavior)
     DEFAULT_SEARCH_RESULTS: int = int(os.getenv("DEFAULT_SEARCH_RESULTS", "3"))
 
     # Neo4j Configuration

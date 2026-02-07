@@ -52,7 +52,7 @@ async def handle_api_request_schema(
     response_data = {
         "api_base_url": endpoint_searcher.base_url,
         "matching_endpoints": results,
-        "reranked": graph_reranker and graph_reranker.enabled if results else False,
+        "reranked": bool(graph_reranker and graph_reranker.enabled and results),
     }
     return json.dumps(response_data, indent=2)
 
