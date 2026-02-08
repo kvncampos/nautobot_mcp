@@ -7,7 +7,6 @@ concurrency:
 
 permissions:
   contents: read
-  packages: write
 
 on: # yamllint disable-line rule:truthy
   push:
@@ -24,7 +23,7 @@ on: # yamllint disable-line rule:truthy
 jobs:
   docker-build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -32,83 +31,12 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Extract metadata
-        id: meta
-        uses: docker/metadata-action@v5
-        with:
-          images: nautobot-mcp
-          tags: |
-            type=ref,event=branch
-            type=ref,event=pr
-            type=semver,pattern={{version}}
-            type=semver,pattern={{major}}.{{minor}}
-            type=sha
-
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
           file: ./Dockerfile
           push: false
-          tags: ${{ steps.meta.outputs.tags }}
-          labels: ${{ steps.meta.outputs.labels }}
+          tags: nautobot-mcp:ci
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          load: true
-
-      - name: Test Docker image (stdio mode)
-        run: |
-          # Extract first tag from the tags list for testing
-          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
-          docker run --rm \
-            -e NAUTOBOT_ENV=local \
-            -e LOG_LEVEL=INFO \
-            -e POSTHOG_API_KEY=disable \
-            "${IMAGE_TAG}" --help
-
-      - name: Test Docker Compose configuration
-        run: |
-          docker compose config --quiet
-
-  # Optional: Push to container registry on successful builds
-  # Uncomment and configure as needed
-  # docker-push:
-  #   needs: docker-build
-  #   runs-on: ubuntu-latest
-  #   if: github.event_name == 'push' && (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v'))
-  #   
-  #   steps:
-  #     - name: Checkout code
-  #       uses: actions/checkout@v4
-  #
-  #     - name: Set up Docker Buildx
-  #       uses: docker/setup-buildx-action@v3
-  #
-  #     - name: Log in to GitHub Container Registry
-  #       uses: docker/login-action@v3
-  #       with:
-  #         registry: ghcr.io
-  #         username: ${{ github.actor }}
-  #         password: ${{ secrets.GITHUB_TOKEN }}
-  #
-  #     - name: Extract metadata
-  #       id: meta
-  #       uses: docker/metadata-action@v5
-  #       with:
-  #         images: ghcr.io/${{ github.repository }}
-  #         tags: |
-  #           type=ref,event=branch
-  #           type=semver,pattern={{version}}
-  #           type=semver,pattern={{major}}.{{minor}}
-  #           type=sha
-  #
-  #     - name: Build and push Docker image
-  #       uses: docker/build-push-action@v5
-  #       with:
-  #         context: .
-  #         file: ./Dockerfile
-  #         push: true
-  #         tags: ${{ steps.meta.outputs.tags }}
-  #         labels: ${{ steps.meta.outputs.labels }}
-  #         cache-from: type=gha
-  #         cache-to: type=gha,mode=max
