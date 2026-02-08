@@ -43,7 +43,26 @@ class Config:
 
     # ChromaDB Configuration
     EMBEDDING_MODEL: str = os.getenv("EMBEDDING_MODEL", "all-MiniLM-L6-v2")
-    DEFAULT_SEARCH_RESULTS: int = int(os.getenv("DEFAULT_SEARCH_RESULTS", "5"))
+    # NOTE: DEFAULT_SEARCH_RESULTS changed from 5 to 3 for graph-enhanced search
+    # Set explicitly in .env to override (e.g., DEFAULT_SEARCH_RESULTS=5 for old behavior)
+    DEFAULT_SEARCH_RESULTS: int = int(os.getenv("DEFAULT_SEARCH_RESULTS", "3"))
+
+    # Neo4j Configuration
+    NEO4J_URI: str = os.getenv("NEO4J_URI", "bolt://localhost:7687")
+    NEO4J_USER: str = os.getenv("NEO4J_USER", "neo4j")
+    NEO4J_PASSWORD: str = os.getenv("NEO4J_PASSWORD", "")
+    NEO4J_DATABASE: str = os.getenv("NEO4J_DATABASE", "neo4j")
+
+    # Graphiti Configuration
+    GRAPHITI_ENABLED: bool = os.getenv("GRAPHITI_ENABLED", "true").lower() in (
+        "true",
+        "1",
+        "yes",
+    )
+    GRAPHITI_LLM_MODEL: str = os.getenv("GRAPHITI_LLM_MODEL", "gpt-4")
+    GRAPHITI_EMBEDDING_MODEL: str = os.getenv(
+        "GRAPHITI_EMBEDDING_MODEL", "text-embedding-3-small"
+    )
 
     # Knowledge Base Mode Configuration
     KNOWLEDGE_BASE_MODE: str = os.getenv(

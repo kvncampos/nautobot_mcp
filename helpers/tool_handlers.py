@@ -10,6 +10,7 @@ from typing import Any, Dict, Optional
 import requests
 
 from helpers.endpoint_searcher_chroma import EndpointSearcherChroma
+from helpers.graph_reranker import GraphReranker
 from helpers.nb_kb_v2 import EnhancedNautobotKnowledge
 from utils.config import config
 from utils.repo_config import RepositoryConfig, RepositoryConfigManager
@@ -18,15 +19,19 @@ logger = logging.getLogger("nautobot_mcp")
 
 
 async def handle_api_request_schema(
-    query: str, n_results: int, endpoint_searcher: EndpointSearcherChroma
+    query: str,
+    n_results: int,
+    endpoint_searcher: EndpointSearcherChroma,
+    graph_reranker: Optional[GraphReranker] = None,
 ) -> str:
     """
-    Handle API schema search requests.
+    Handle API schema search requests with optional graph-based re-ranking.
 
     Args:
         query: Natural language query describing the desired API operation
         n_results: Number of results to return
         endpoint_searcher: Initialized EndpointSearcherChroma instance
+        graph_reranker: Optional GraphReranker instance for intelligent re-ranking
 
     Returns:
         JSON string containing matching endpoints and base URL
@@ -34,10 +39,20 @@ async def handle_api_request_schema(
     logger.info(
         f"Searching endpoint index for query: '{query}' with n_results={n_results}"
     )
-    results = endpoint_searcher.search(query, n_results=n_results)
+
+    # Get initial results from ChromaDB (fetch more for re-ranking)
+    initial_results = n_results * 2 if graph_reranker and graph_reranker.enabled else n_results
+    results = endpoint_searcher.search(query, n_results=initial_results)
+
+    # Apply graph-based re-ranking if available
+    if graph_reranker and graph_reranker.enabled and results:
+        logger.debug("Applying graph-based re-ranking")
+        results = graph_reranker.rerank(query, results, n_results=n_results)
+
     response_data = {
         "api_base_url": endpoint_searcher.base_url,
         "matching_endpoints": results,
+        "reranked": bool(graph_reranker and graph_reranker.enabled and results),
     }
     return json.dumps(response_data, indent=2)
 
