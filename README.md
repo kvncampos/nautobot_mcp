@@ -49,6 +49,33 @@ A Model Context Protocol (MCP) server for interacting with Nautobot APIs using s
 
 ## 🛠️ Installation
 
+### Option 1: Docker Installation (Recommended)
+
+The easiest way to run the Nautobot MCP server is using Docker:
+
+1. **Clone the repository**:
+   ```bash
+   git clone <repository-url>
+   cd nautobot_mcp
+   ```
+
+2. **Configure environment variables**:
+   ```bash
+   cp .env.example .env
+   # Edit .env with your configuration
+   ```
+
+3. **Run with Docker Compose**:
+   ```bash
+   # For stdio mode (default)
+   docker compose up -d
+   
+   # For HTTP mode
+   MCP_TRANSPORT=http MCP_PORT=8000 docker compose up -d
+   ```
+
+### Option 2: Local Python Installation
+
 1. **Clone the repository**:
    ```bash
    git clone <repository-url>
@@ -135,8 +162,79 @@ Example repository configuration:
 
 ### Starting the MCP Server
 
+#### Docker Usage
+
+**stdio mode (for MCP clients like Claude Desktop, VS Code, etc.):**
 ```bash
+# Using docker compose
+docker compose up -d
+
+# Or using docker run
+docker run -d \
+  --name nautobot-mcp \
+  --env-file .env \
+  -v nautobot-mcp-chroma:/app/backend/chroma_db \
+  -v nautobot-mcp-models:/app/backend/models \
+  nautobot-mcp:latest --mode stdio
+```
+
+**HTTP mode (for web-based integrations):**
+```bash
+# Using docker compose
+MCP_TRANSPORT=http MCP_PORT=8000 docker compose up -d
+
+# Or using docker run
+docker run -d \
+  --name nautobot-mcp \
+  --env-file .env \
+  -e MCP_TRANSPORT=http \
+  -e MCP_PORT=8000 \
+  -p 8000:8000 \
+  -v nautobot-mcp-chroma:/app/backend/chroma_db \
+  -v nautobot-mcp-models:/app/backend/models \
+  nautobot-mcp:latest --mode http --port 8000
+```
+
+**View logs:**
+```bash
+# Follow logs
+docker compose logs -f
+
+# View last 100 lines
+docker compose logs --tail=100
+```
+
+**Stop the server:**
+```bash
+docker compose down
+
+# To also remove volumes (warning: deletes ChromaDB data)
+docker compose down -v
+```
+
+#### Local Python Usage
+
+**stdio mode:**
+```bash
+python main.py
+# or
+python main.py --mode stdio
+```
+
+**HTTP mode:**
+```bash
+python main.py --mode http
+# or with custom port
+python main.py --mode http --port 9000
+```
+
+**Legacy server files (still supported):**
+```bash
+# stdio mode
 python server.py
+
+# HTTP mode
+python server_http.py
 ```
 
 The server will automatically:
@@ -151,6 +249,7 @@ Add to your VS Code MCP settings to use with GitHub Copilot:
 1. VS Code: Command Palete:
 2. '>MCP: Open User Configuration'
 
+**Local Installation:**
 ```json
 {
 	"servers": {
@@ -161,14 +260,71 @@ Add to your VS Code MCP settings to use with GitHub Copilot:
 				"run",
 				"--directory",
 				"/path/to/nautobot_mcp",
-				"python3",
-				"-m",
-				"server"
+				"python",
+				"main.py",
+				"--mode",
+				"stdio"
 			]
 		}
 	},
 	"inputs": []
 }
+```
+
+**Docker Installation:**
+```json
+{
+	"servers": {
+		"nautobot_mcp": {
+			"type": "stdio",
+			"command": "docker",
+			"args": [
+				"run",
+				"-i",
+				"--rm",
+				"--env-file",
+				"/path/to/nautobot_mcp/.env",
+				"-v",
+				"nautobot-mcp-chroma:/app/backend/chroma_db",
+				"-v",
+				"nautobot-mcp-models:/app/backend/models",
+				"nautobot-mcp:latest",
+				"--mode",
+				"stdio"
+			]
+		}
+	},
+	"inputs": []
+}
+```
+
+### Docker Configuration Notes
+
+**Data Persistence:**
+- ChromaDB data is stored in the `nautobot-mcp-chroma` volume
+- Sentence transformer models are cached in the `nautobot-mcp-models` volume
+- Volumes persist across container restarts and rebuilds
+- To reset the knowledge base, remove the volumes: `docker compose down -v`
+
+**Environment Variables:**
+- All configuration is done through the `.env` file
+- The `.env` file is loaded automatically when using `docker compose`
+- For `docker run`, use `--env-file .env` or `-e VAR=value` for individual variables
+
+**Transport Modes:**
+- **stdio mode**: For integration with MCP clients (Claude Desktop, VS Code, etc.)
+- **HTTP mode**: For web-based integrations or REST API access
+- Switch modes by setting `MCP_TRANSPORT=http` or `MCP_TRANSPORT=stdio`
+
+**Resource Management:**
+- Default limits: 2 CPU cores, 4GB RAM
+- Adjust in `docker compose.yml` under `deploy.resources`
+- Monitor usage: `docker stats nautobot-mcp-server`
+
+**Logs:**
+- View logs: `docker compose logs -f`
+- Logs are rotated (max 10MB per file, 3 files retained)
+- Adjust in `docker compose.yml` under `logging`
 ```
 
 ### Example API Requests
@@ -429,6 +585,65 @@ uv run python -c "from server import main; print('Server imports OK')"
    # Force reinitialize repositories
    kb = EnhancedNautobotKnowledge()
    kb.initialize_all_repositories(force=True)
+   ```
+
+### Docker-Specific Issues
+
+1. **Container Won't Start**:
+   ```bash
+   # Check logs for errors
+   docker compose logs
+   
+   # Verify environment variables
+   docker compose config
+   
+   # Rebuild the image
+   docker compose build --no-cache
+   ```
+
+2. **Volume Permission Issues**:
+   ```bash
+   # Check volume permissions
+   docker compose exec nautobot-mcp ls -la /app/backend/
+   
+   # If needed, recreate volumes
+   docker compose down -v
+   docker compose up -d
+   ```
+
+3. **Port Already in Use (HTTP mode)**:
+   ```bash
+   # Check what's using the port
+   lsof -i :8000
+   
+   # Use a different port
+   MCP_PORT=9000 docker compose up -d
+   ```
+
+4. **Out of Memory Errors**:
+   ```bash
+   # Increase memory limits in docker compose.yml
+   # Under deploy.resources.limits.memory
+   
+   # Check current usage
+   docker stats nautobot-mcp-server
+   ```
+
+5. **ChromaDB Data Not Persisting**:
+   ```bash
+   # Verify volumes are created
+   docker volume ls | grep nautobot-mcp
+   
+   # Inspect volume
+   docker volume inspect nautobot-mcp-chroma
+   ```
+
+6. **Building Behind Corporate Proxy**:
+   ```bash
+   # Add proxy settings to docker compose.yml build args
+   docker compose build \
+     --build-arg HTTP_PROXY=http://proxy.example.com:8080 \
+     --build-arg HTTPS_PROXY=http://proxy.example.com:8080
    ```
 
 ### Debug Mode

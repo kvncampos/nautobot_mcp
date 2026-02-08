@@ -1,0 +1,83 @@
+services:
+  nautobot-mcp:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: nautobot-mcp:latest
+    container_name: nautobot-mcp-server
+    
+    # Environment variables - loaded from .env file
+    env_file:
+      - .env
+    
+    # Additional environment variables for Docker
+    # Note: These values override defaults set in the Dockerfile
+    # Values from .env file are loaded first, then these can override them
+    environment:
+      # Transport mode: stdio or http
+      - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
+      - MCP_PORT=${MCP_PORT:-8000}
+      
+      # Override these if needed
+      - PYTHONUNBUFFERED=1
+      - TOKENIZERS_PARALLELISM=false
+    
+    # Port mapping (only relevant for HTTP mode)
+    # Maps host port to container port (both use MCP_PORT for consistency)
+    ports:
+      - "${MCP_PORT:-8000}:${MCP_PORT:-8000}"
+    
+    # Volume mounts for data persistence
+    volumes:
+      # ChromaDB data persistence
+      - chroma-data:/app/backend/chroma_db
+      # Model cache persistence (sentence transformers)
+      - model-cache:/app/backend/models
+      # Optional: Mount local config for development
+      # - ./config:/app/config:ro
+      # Optional: Mount .env file if not using env_file
+      # - ./.env:/app/.env:ro
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Command override examples:
+    # For stdio mode (default):
+    # command: ["--mode", "stdio"]
+    # 
+    # For HTTP mode:
+    # command: ["--mode", "http", "--port", "8000"]
+    # 
+    # Note: Command uses environment variables set above
+    # To override, specify command explicitly without variables
+    
+    # Resource limits (adjust based on your needs)
+    deploy:
+      resources:
+        limits:
+          cpus: '2.0'
+          memory: 4G
+        reservations:
+          cpus: '0.5'
+          memory: 1G
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+# Named volumes for data persistence
+volumes:
+  chroma-data:
+    driver: local
+    name: nautobot-mcp-chroma
+  model-cache:
+    driver: local
+    name: nautobot-mcp-models
+
+# Network configuration (optional)
+networks:
+  default:
+    name: nautobot-mcp-network
