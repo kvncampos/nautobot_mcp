@@ -201,10 +201,10 @@ docker-compose up -d
 ```bash
 # In .env
 MCP_TRANSPORT=http
-MCP_PORT=8000
+MCP_PORT=8081
 
 # Or via command line
-MCP_TRANSPORT=http MCP_PORT=8000 docker-compose up -d
+MCP_TRANSPORT=http MCP_PORT=8081 docker-compose up -d
 ```
 
 ### Data Persistence
@@ -265,8 +265,8 @@ docker-compose up -d
 ### "Port already in use" error
 
 ```bash
-# Check what's using port 8000
-lsof -i :8000  # or netstat -tulpn | grep 8000
+# Check what's using port 8081
+lsof -i :8081  # or netstat -tulpn | grep 8081
 
 # Use a different port
 MCP_PORT=9000 docker-compose up -d
@@ -349,10 +349,10 @@ volumes:
 
 Run multiple instances on different ports:
 ```bash
-# Instance 1 (port 8000)
-MCP_PORT=8000 docker-compose -p nautobot-mcp-1 up -d
+# Instance 1 (port 8081 - default)
+MCP_PORT=8081 docker-compose -p nautobot-mcp-1 up -d
 
-# Instance 2 (port 9000)
+# Instance 2 (port 9000 - alternative)
 MCP_PORT=9000 docker-compose -p nautobot-mcp-2 up -d
 ```
 

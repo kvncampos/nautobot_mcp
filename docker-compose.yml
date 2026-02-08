@@ -23,8 +23,9 @@ services:
       - TOKENIZERS_PARALLELISM=false
     
     # Port mapping (only relevant for HTTP mode)
+    # Maps host port 8081 to container port 8081 (avoids conflict with Nautobot's 8000/8080)
     ports:
-      - "${MCP_PORT:-8000}:8081"
+      - "${MCP_PORT:-8081}:8081"
     
     # Volume mounts for data persistence
     volumes:
