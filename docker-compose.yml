@@ -16,16 +16,16 @@ services:
     environment:
       # Transport mode: stdio or http
       - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
-      - MCP_PORT=${MCP_PORT:-8081}
+      - MCP_PORT=${MCP_PORT:-8000}
       
       # Override these if needed
       - PYTHONUNBUFFERED=1
       - TOKENIZERS_PARALLELISM=false
     
     # Port mapping (only relevant for HTTP mode)
-    # Maps host port 8081 to container port 8081 (avoids conflict with Nautobot's 8000/8080)
+    # Maps host port to container port (both use MCP_PORT for consistency)
     ports:
-      - "${MCP_PORT:-8081}:8081"
+      - "${MCP_PORT:-8000}:${MCP_PORT:-8000}"
     
     # Volume mounts for data persistence
     volumes:

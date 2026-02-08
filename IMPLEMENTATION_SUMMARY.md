@@ -21,7 +21,7 @@ Successfully implemented a unified entrypoint for the nautobot-mcp project with 
    - Volume mounts for ChromaDB data persistence
    - Supports both stdio and HTTP modes
 
-3. **`docker-compose.yml`** (66 lines)
+3. **`docker compose.yml`** (66 lines)
    - Production-ready configuration
    - Environment variable management via .env file
    - Named volumes for data persistence
@@ -60,7 +60,7 @@ Successfully implemented a unified entrypoint for the nautobot-mcp project with 
 8. **`.github/workflows/docker.yml`** (113 lines)
    - Automated Docker builds on PRs and pushes
    - Uses Docker Buildx with caching
-   - Tests both stdio and docker-compose configurations
+   - Tests both stdio and docker compose configurations
    - Optional push to container registry (commented out)
 
 ### Configuration
@@ -81,7 +81,7 @@ Successfully implemented a unified entrypoint for the nautobot-mcp project with 
 - **Data persistence** through named volumes
 - **Security** with non-root user and minimal base image
 - **Resource management** with configurable limits
-- **Easy deployment** with docker-compose
+- **Easy deployment** with docker compose
 
 ### Configuration Options
 
@@ -95,7 +95,7 @@ python main.py --mode stdio
 MCP_TRANSPORT=stdio python main.py
 
 # Using Docker
-docker-compose up -d
+docker compose up -d
 ```
 
 #### HTTP Mode
@@ -107,7 +107,7 @@ python main.py --mode http --port 8000
 MCP_TRANSPORT=http MCP_PORT=8000 python main.py
 
 # Using Docker
-MCP_TRANSPORT=http docker-compose up -d
+MCP_TRANSPORT=http docker compose up -d
 ```
 
 ## Code Quality
@@ -172,16 +172,16 @@ cd nautobot_mcp
 cp .env.example .env
 
 # Build and run (stdio mode)
-docker-compose up -d
+docker compose up -d
 
 # Build and run (HTTP mode)
-MCP_TRANSPORT=http docker-compose up -d
+MCP_TRANSPORT=http docker compose up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop
-docker-compose down
+docker compose down
 ```
 
 ### VS Code Integration (Docker)

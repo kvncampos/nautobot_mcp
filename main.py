@@ -31,8 +31,17 @@ from utils.config import config
 if not config.SSL_VERIFY:
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-# Configure logging
-logging.basicConfig(level=getattr(logging, config.LOG_LEVEL.upper()))
+# Configure logging with safe fallback for invalid LOG_LEVEL
+_log_level_name = str(config.LOG_LEVEL).upper()
+_log_level = getattr(logging, _log_level_name, None)
+if not isinstance(_log_level, int):
+    logging.basicConfig(level=logging.INFO)
+    logging.warning(
+        "Invalid LOG_LEVEL '%s' in configuration; falling back to INFO.",
+        config.LOG_LEVEL,
+    )
+else:
+    logging.basicConfig(level=_log_level)
 logger = logging.getLogger("nautobot_mcp")
 
 # Set external service configurations
@@ -409,19 +418,31 @@ Examples:
         """,
     )
 
+    # Normalize transport mode from environment (case-insensitive)
+    transport_default = os.getenv("MCP_TRANSPORT", "stdio")
+    if transport_default is not None:
+        transport_default = transport_default.lower()
+
     parser.add_argument(
         "--mode",
         "-m",
         choices=["stdio", "http"],
-        default=os.getenv("MCP_TRANSPORT", "stdio"),
+        default=transport_default,
         help="Transport mode: stdio (default) or http",
     )
+
+    # Validate port from environment before using it
+    env_port = os.getenv("MCP_PORT", "8000")
+    try:
+        default_port = int(env_port)
+    except ValueError:
+        parser.error(f"environment variable MCP_PORT={env_port!r} is not a valid integer")
 
     parser.add_argument(
         "--port",
         "-p",
         type=int,
-        default=int(os.getenv("MCP_PORT", "8000")),
+        default=default_port,
         help="Port number for HTTP mode (default: 8000)",
     )
 

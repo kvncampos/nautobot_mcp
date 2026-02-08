@@ -74,10 +74,14 @@ if [ -f .env ]; then
     echo ""
     echo "5. Checking required environment variables..."
     
-    # Source .env
-    set -a
-    source .env
-    set +a
+    # Safely parse required variables from .env without executing its contents
+    # Only parse KEY=VALUE lines, ignore comments and empty lines
+    if [ -z "${NAUTOBOT_ENV+x}" ]; then
+        NAUTOBOT_ENV=$(grep -E '^[[:space:]]*NAUTOBOT_ENV=' .env 2>/dev/null | head -n1 | cut -d '=' -f2- | sed 's/^["'\'']\(.*\)["'\'']$/\1/')
+    fi
+    if [ -z "${GITHUB_TOKEN+x}" ]; then
+        GITHUB_TOKEN=$(grep -E '^[[:space:]]*GITHUB_TOKEN=' .env 2>/dev/null | head -n1 | cut -d '=' -f2- | sed 's/^["'\'']\(.*\)["'\'']$/\1/')
+    fi
     
     if [ -n "$NAUTOBOT_ENV" ]; then
         print_success "NAUTOBOT_ENV is set: $NAUTOBOT_ENV"

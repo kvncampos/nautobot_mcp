@@ -61,10 +61,10 @@ The easiest way to run the Nautobot MCP server is using Docker:
 3. **Run with Docker Compose**:
    ```bash
    # For stdio mode (default)
-   docker-compose up -d
+   docker compose up -d
    
    # For HTTP mode
-   MCP_TRANSPORT=http MCP_PORT=8000 docker-compose up -d
+   MCP_TRANSPORT=http MCP_PORT=8000 docker compose up -d
    ```
 
 ### Option 2: Local Python Installation
@@ -159,8 +159,8 @@ Example repository configuration:
 
 **stdio mode (for MCP clients like Claude Desktop, VS Code, etc.):**
 ```bash
-# Using docker-compose
-docker-compose up -d
+# Using docker compose
+docker compose up -d
 
 # Or using docker run
 docker run -d \
@@ -173,8 +173,8 @@ docker run -d \
 
 **HTTP mode (for web-based integrations):**
 ```bash
-# Using docker-compose
-MCP_TRANSPORT=http MCP_PORT=8000 docker-compose up -d
+# Using docker compose
+MCP_TRANSPORT=http MCP_PORT=8000 docker compose up -d
 
 # Or using docker run
 docker run -d \
@@ -191,18 +191,18 @@ docker run -d \
 **View logs:**
 ```bash
 # Follow logs
-docker-compose logs -f
+docker compose logs -f
 
 # View last 100 lines
-docker-compose logs --tail=100
+docker compose logs --tail=100
 ```
 
 **Stop the server:**
 ```bash
-docker-compose down
+docker compose down
 
 # To also remove volumes (warning: deletes ChromaDB data)
-docker-compose down -v
+docker compose down -v
 ```
 
 #### Local Python Usage
@@ -297,11 +297,11 @@ Add to your VS Code MCP settings to use with GitHub Copilot:
 - ChromaDB data is stored in the `nautobot-mcp-chroma` volume
 - Sentence transformer models are cached in the `nautobot-mcp-models` volume
 - Volumes persist across container restarts and rebuilds
-- To reset the knowledge base, remove the volumes: `docker-compose down -v`
+- To reset the knowledge base, remove the volumes: `docker compose down -v`
 
 **Environment Variables:**
 - All configuration is done through the `.env` file
-- The `.env` file is loaded automatically when using `docker-compose`
+- The `.env` file is loaded automatically when using `docker compose`
 - For `docker run`, use `--env-file .env` or `-e VAR=value` for individual variables
 
 **Transport Modes:**
@@ -311,13 +311,13 @@ Add to your VS Code MCP settings to use with GitHub Copilot:
 
 **Resource Management:**
 - Default limits: 2 CPU cores, 4GB RAM
-- Adjust in `docker-compose.yml` under `deploy.resources`
+- Adjust in `docker compose.yml` under `deploy.resources`
 - Monitor usage: `docker stats nautobot-mcp-server`
 
 **Logs:**
-- View logs: `docker-compose logs -f`
+- View logs: `docker compose logs -f`
 - Logs are rotated (max 10MB per file, 3 files retained)
-- Adjust in `docker-compose.yml` under `logging`
+- Adjust in `docker compose.yml` under `logging`
 ```
 
 ### Example API Requests
@@ -585,23 +585,23 @@ uv run python -c "from server import main; print('Server imports OK')"
 1. **Container Won't Start**:
    ```bash
    # Check logs for errors
-   docker-compose logs
+   docker compose logs
    
    # Verify environment variables
-   docker-compose config
+   docker compose config
    
    # Rebuild the image
-   docker-compose build --no-cache
+   docker compose build --no-cache
    ```
 
 2. **Volume Permission Issues**:
    ```bash
    # Check volume permissions
-   docker-compose exec nautobot-mcp ls -la /app/backend/
+   docker compose exec nautobot-mcp ls -la /app/backend/
    
    # If needed, recreate volumes
-   docker-compose down -v
-   docker-compose up -d
+   docker compose down -v
+   docker compose up -d
    ```
 
 3. **Port Already in Use (HTTP mode)**:
@@ -610,12 +610,12 @@ uv run python -c "from server import main; print('Server imports OK')"
    lsof -i :8000
    
    # Use a different port
-   MCP_PORT=9000 docker-compose up -d
+   MCP_PORT=9000 docker compose up -d
    ```
 
 4. **Out of Memory Errors**:
    ```bash
-   # Increase memory limits in docker-compose.yml
+   # Increase memory limits in docker compose.yml
    # Under deploy.resources.limits.memory
    
    # Check current usage
@@ -633,8 +633,8 @@ uv run python -c "from server import main; print('Server imports OK')"
 
 6. **Building Behind Corporate Proxy**:
    ```bash
-   # Add proxy settings to docker-compose.yml build args
-   docker-compose build \
+   # Add proxy settings to docker compose.yml build args
+   docker compose build \
      --build-arg HTTP_PROXY=http://proxy.example.com:8080 \
      --build-arg HTTPS_PROXY=http://proxy.example.com:8080
    ```

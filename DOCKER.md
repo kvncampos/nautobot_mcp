@@ -49,22 +49,22 @@ GITHUB_TOKEN=your_github_token_here  # for knowledge base
 
 **Option A: stdio mode (for MCP clients)**
 ```bash
-docker-compose up -d
+docker compose up -d
 ```
 
 **Option B: HTTP mode (for web integrations)**
 ```bash
-MCP_TRANSPORT=http docker-compose up -d
+MCP_TRANSPORT=http docker compose up -d
 ```
 
 ### 3. Verify It's Running
 
 ```bash
 # Check container status
-docker-compose ps
+docker compose ps
 
 # Follow logs
-docker-compose logs -f
+docker compose logs -f
 ```
 
 ## Docker Image Optimizations
@@ -152,36 +152,36 @@ Expected: Second build should be 5-10x faster.
 ### View Logs
 ```bash
 # Follow all logs
-docker-compose logs -f
+docker compose logs -f
 
 # View last 100 lines
-docker-compose logs --tail=100
+docker compose logs --tail=100
 
 # View logs for last 1 hour
-docker-compose logs --since=1h
+docker compose logs --since=1h
 ```
 
 ### Restart the Server
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 ### Stop the Server
 ```bash
-docker-compose down
+docker compose down
 ```
 
 ### Update After Code Changes
 ```bash
 # Rebuild and restart
-docker-compose up -d --build
+docker compose up -d --build
 ```
 
 ### Reset Everything (including data)
 ```bash
 # WARNING: This deletes all ChromaDB data
-docker-compose down -v
-docker-compose up -d
+docker compose down -v
+docker compose up -d
 ```
 
 ## Configuration
@@ -194,7 +194,7 @@ docker-compose up -d
 MCP_TRANSPORT=stdio
 
 # Or via command line
-docker-compose up -d
+docker compose up -d
 ```
 
 **HTTP mode** - For web-based integrations
@@ -204,7 +204,7 @@ MCP_TRANSPORT=http
 MCP_PORT=8081
 
 # Or via command line
-MCP_TRANSPORT=http MCP_PORT=8081 docker-compose up -d
+MCP_TRANSPORT=http MCP_PORT=8081 docker compose up -d
 ```
 
 ### Data Persistence
@@ -229,11 +229,11 @@ docker run --rm -v nautobot-mcp-chroma:/data -v $(pwd):/backup \
 
 ### Resource Limits
 
-Default limits are set in `docker-compose.yml`:
+Default limits are set in `docker compose.yml`:
 - CPU: 2 cores (limit), 0.5 cores (reservation)
 - Memory: 4GB (limit), 1GB (reservation)
 
-To change limits, edit `docker-compose.yml`:
+To change limits, edit `docker compose.yml`:
 ```yaml
 deploy:
   resources:
@@ -251,15 +251,15 @@ deploy:
 
 ```bash
 # Check logs for errors
-docker-compose logs
+docker compose logs
 
 # Verify configuration
-docker-compose config
+docker compose config
 
 # Try rebuilding
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
+docker compose down
+docker compose build --no-cache
+docker compose up -d
 ```
 
 ### "Port already in use" error
@@ -269,7 +269,7 @@ docker-compose up -d
 lsof -i :8081  # or netstat -tulpn | grep 8081
 
 # Use a different port
-MCP_PORT=9000 docker-compose up -d
+MCP_PORT=9000 docker compose up -d
 ```
 
 ### Out of memory errors
@@ -278,21 +278,21 @@ MCP_PORT=9000 docker-compose up -d
 # Check current usage
 docker stats nautobot-mcp-server
 
-# Increase memory limit in docker-compose.yml
+# Increase memory limit in docker compose.yml
 # Then restart:
-docker-compose down
-docker-compose up -d
+docker compose down
+docker compose up -d
 ```
 
 ### Permission errors
 
 ```bash
 # Check volume permissions
-docker-compose exec nautobot-mcp ls -la /app/backend/
+docker compose exec nautobot-mcp ls -la /app/backend/
 
 # Recreate volumes if needed
-docker-compose down -v
-docker-compose up -d
+docker compose down -v
+docker compose up -d
 ```
 
 ### ChromaDB data not persisting
@@ -302,7 +302,7 @@ docker-compose up -d
 docker volume ls | grep nautobot-mcp
 
 # Check volume mount
-docker-compose exec nautobot-mcp ls -la /app/backend/chroma_db/
+docker compose exec nautobot-mcp ls -la /app/backend/chroma_db/
 ```
 
 ## Integration with VS Code
@@ -340,7 +340,7 @@ Add this to your VS Code MCP configuration:
 
 Mount a custom configuration directory:
 ```yaml
-# Add to docker-compose.yml volumes:
+# Add to docker compose.yml volumes:
 volumes:
   - ./config:/app/config:ro
 ```
@@ -350,24 +350,24 @@ volumes:
 Run multiple instances on different ports:
 ```bash
 # Instance 1 (port 8081 - default)
-MCP_PORT=8081 docker-compose -p nautobot-mcp-1 up -d
+MCP_PORT=8081 docker compose -p nautobot-mcp-1 up -d
 
 # Instance 2 (port 9000 - alternative)
-MCP_PORT=9000 docker-compose -p nautobot-mcp-2 up -d
+MCP_PORT=9000 docker compose -p nautobot-mcp-2 up -d
 ```
 
 ### Development Mode
 
 For development with live code reload:
 ```yaml
-# Add to docker-compose.yml:
+# Add to docker compose.yml:
 volumes:
   - .:/app:ro  # Mount source code
 ```
 
 Then restart on code changes:
 ```bash
-docker-compose restart
+docker compose restart
 ```
 
 ## Production Deployment
@@ -396,7 +396,7 @@ docker-compose restart
    ```
 
 5. **Implement health checks**
-   - Already configured in docker-compose.yml
+   - Already configured in docker compose.yml
    - Monitor with your orchestration platform
 
 6. **Regular backups**
@@ -421,7 +421,7 @@ docker-compose restart
 ## Support
 
 If you encounter issues:
-1. Check the logs: `docker-compose logs -f`
+1. Check the logs: `docker compose logs -f`
 2. Verify your `.env` configuration
 3. Check the troubleshooting section above
 4. Review the main README.md

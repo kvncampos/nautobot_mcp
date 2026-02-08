@@ -38,19 +38,19 @@ For containerized development, the project includes an optimized Docker configur
 
 ```bash
 # Build the image
-docker-compose build
+docker compose build
 
 # Run in stdio mode (for MCP clients)
-docker-compose up -d
+docker compose up -d
 
 # Run in HTTP mode
-MCP_TRANSPORT=http docker-compose up -d
+MCP_TRANSPORT=http docker compose up -d
 
 # View logs
-docker-compose logs -f
+docker compose logs -f
 
 # Stop containers
-docker-compose down
+docker compose down
 ```
 
 ### Docker Optimizations
@@ -88,34 +88,34 @@ Expected: Second build should skip dependency installation entirely.
 
 ```bash
 # Option 1: Mount source code for live changes
-docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+docker compose -f docker compose.yml -f docker compose.dev.yml up
 
 # Option 2: Rebuild after code changes
-docker-compose up -d --build
+docker compose up -d --build
 
 # Option 3: Interactive shell in container
-docker-compose exec nautobot-mcp /bin/bash
+docker compose exec nautobot-mcp /bin/bash
 ```
 
 **Running Tests in Docker**:
 
 ```bash
 # Run tests inside container
-docker-compose exec nautobot-mcp pytest
+docker compose exec nautobot-mcp pytest
 
 # Run specific test categories
-docker-compose exec nautobot-mcp pytest -m "unit"
-docker-compose exec nautobot-mcp pytest -m "integration"
+docker compose exec nautobot-mcp pytest -m "unit"
+docker compose exec nautobot-mcp pytest -m "integration"
 ```
 
 **Debugging in Docker**:
 
 ```bash
 # View application logs
-docker-compose logs -f nautobot-mcp
+docker compose logs -f nautobot-mcp
 
 # Check container status
-docker-compose ps
+docker compose ps
 
 # Inspect volumes
 docker volume ls | grep nautobot-mcp

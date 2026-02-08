@@ -54,14 +54,17 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          load: true
 
       - name: Test Docker image (stdio mode)
         run: |
+          # Extract first tag from the tags list for testing
+          IMAGE_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
           docker run --rm \
             -e NAUTOBOT_ENV=local \
             -e LOG_LEVEL=INFO \
             -e POSTHOG_API_KEY=disable \
-            nautobot-mcp:${{ steps.meta.outputs.version }} --help
+            "${IMAGE_TAG}" --help
 
       - name: Test Docker Compose configuration
         run: |
