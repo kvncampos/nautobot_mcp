@@ -35,7 +35,7 @@ Successfully implemented a unified entrypoint for the nautobot-mcp project with 
    - Keeps essential files (pyproject.toml, uv.lock)
 
 ### Documentation
-5. **`DOCKER.md`** (281 lines)
+5. **`docs/docker.md`** (281 lines)
    - Comprehensive Docker quick start guide
    - Common operations and troubleshooting
    - Data persistence and backup instructions
