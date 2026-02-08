@@ -66,7 +66,7 @@ The Dockerfile leverages **uv** for optimal build performance:
 - `UV_COMPILE_BYTECODE=1`: Precompiled bytecode for faster startup
 - `UV_LINK_MODE=copy`: Required for cache mounts
 - Multi-stage build: Smaller production images
-- Pinned uv version (0.5.13): Reproducible builds
+- Pinned uv version (0.5.21): Reproducible builds
 
 **Test Build Performance**:
 ```bash

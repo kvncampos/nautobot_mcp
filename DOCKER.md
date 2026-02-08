@@ -73,7 +73,7 @@ The Dockerfile has been optimized to leverage [uv](https://github.com/astral-sh/
 
 ### UV Package Manager Integration
 
-**Official UV Image**: The Docker image uses uv from the official Astral image (ghcr.io/astral-sh/uv:0.5.13), which is:
+**Official UV Image**: The Docker image uses uv from the official Astral image (ghcr.io/astral-sh/uv:0.5.21), which is:
 - **Faster**: Cryptographically signed binary vs compiling from source
 - **Secure**: Verified with GitHub attestations
 - **Reproducible**: Pinned to a specific version
@@ -122,7 +122,7 @@ The following UV environment variables are set:
 
 ### Version Pinning
 
-UV is pinned to version 0.5.13 for reproducibility. To update:
+UV is pinned to version 0.5.21 for reproducibility. To update:
 
 ```dockerfile
 COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/

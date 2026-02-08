@@ -5,8 +5,8 @@
 FROM python:3.11-slim AS builder
 
 # Copy uv from official image (pinned version for reproducibility)
-# Version 0.5.13 is the latest stable release as of this build
-COPY --from=ghcr.io/astral-sh/uv:0.5.13 /uv /uvx /bin/
+# Version 0.5.21 matches local development environment
+COPY --from=ghcr.io/astral-sh/uv:0.5.21 /uv /uvx /bin/
 
 # Install system dependencies for building
 RUN apt-get update && apt-get install -y --no-install-recommends \
