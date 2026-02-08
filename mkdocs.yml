@@ -48,6 +48,7 @@ nav:
       - Installation: installation.md
       - Quick Start: quickstart.md
       - Configuration: configuration.md
+      - Docker Guide: docker.md
   - User Guide:
       - Architecture: architecture.md
       - MCP Tools: tools.md
