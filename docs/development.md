@@ -30,6 +30,100 @@ pip install -e ".[dev]"
 pre-commit install
 ```
 
+## Docker Development
+
+### Docker Setup
+
+For containerized development, the project includes an optimized Docker configuration:
+
+```bash
+# Build the image
+docker-compose build
+
+# Run in stdio mode (for MCP clients)
+docker-compose up -d
+
+# Run in HTTP mode
+MCP_TRANSPORT=http docker-compose up -d
+
+# View logs
+docker-compose logs -f
+
+# Stop containers
+docker-compose down
+```
+
+### Docker Optimizations
+
+The Dockerfile leverages **uv** for optimal build performance:
+
+**Fast Rebuilds**: Cache mounts make rebuilds 5-10x faster:
+- Downloaded packages are cached between builds
+- Only changed layers are rebuilt
+- Dependencies layer is separate from code layer
+
+**Performance Features**:
+- `UV_COMPILE_BYTECODE=1`: Precompiled bytecode for faster startup
+- `UV_LINK_MODE=copy`: Required for cache mounts
+- Multi-stage build: Smaller production images
+- Pinned uv version (0.5.13): Reproducible builds
+
+**Test Build Performance**:
+```bash
+# First build (downloads dependencies)
+time docker build -t nautobot-mcp:test .
+
+# Make a code change
+echo "# test" >> README.md
+
+# Second build (uses cached dependencies)
+time docker build -t nautobot-mcp:test .
+```
+
+Expected: Second build should skip dependency installation entirely.
+
+### Docker Development Workflow
+
+**Local Development with Docker**:
+
+```bash
+# Option 1: Mount source code for live changes
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+# Option 2: Rebuild after code changes
+docker-compose up -d --build
+
+# Option 3: Interactive shell in container
+docker-compose exec nautobot-mcp /bin/bash
+```
+
+**Running Tests in Docker**:
+
+```bash
+# Run tests inside container
+docker-compose exec nautobot-mcp pytest
+
+# Run specific test categories
+docker-compose exec nautobot-mcp pytest -m "unit"
+docker-compose exec nautobot-mcp pytest -m "integration"
+```
+
+**Debugging in Docker**:
+
+```bash
+# View application logs
+docker-compose logs -f nautobot-mcp
+
+# Check container status
+docker-compose ps
+
+# Inspect volumes
+docker volume ls | grep nautobot-mcp
+docker volume inspect nautobot-mcp-chroma
+```
+
+For detailed Docker usage, see [DOCKER.md](../DOCKER.md).
+
 ## Project Structure
 
 ```

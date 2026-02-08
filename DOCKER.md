@@ -67,6 +67,86 @@ docker-compose ps
 docker-compose logs -f
 ```
 
+## Docker Image Optimizations
+
+The Dockerfile has been optimized to leverage [uv](https://github.com/astral-sh/uv), a fast Python package manager, with the following enhancements:
+
+### UV Package Manager Integration
+
+**Official UV Image**: The Docker image uses uv from the official Astral image (ghcr.io/astral-sh/uv:0.5.13), which is:
+- **Faster**: Cryptographically signed binary vs compiling from source
+- **Secure**: Verified with GitHub attestations
+- **Reproducible**: Pinned to a specific version
+
+### Build Performance Features
+
+**Cache Mounts**: Docker cache mounts dramatically speed up rebuilds:
+```dockerfile
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --locked
+```
+
+Benefits:
+- Downloaded packages are cached between builds
+- Rebuilds skip dependency downloads entirely
+- Especially beneficial in CI/CD pipelines
+
+**Intermediate Layers Pattern**: Dependencies and project code are installed in separate layers:
+1. First layer: Install dependencies only (rarely changes)
+2. Second layer: Install project code (changes frequently)
+
+This means changing your code doesn't invalidate the dependency cache.
+
+### Runtime Optimizations
+
+**Bytecode Compilation** (`UV_COMPILE_BYTECODE=1`):
+- Python bytecode is precompiled during build
+- Faster application startup time
+- Tradeoff: Slightly larger image size
+
+**Link Mode** (`UV_LINK_MODE=copy`):
+- Required for cache mounts to work properly
+- Prevents hardlink warnings between host and container
+
+### Environment Variables
+
+The following UV environment variables are set:
+
+**Builder Stage:**
+- `UV_COMPILE_BYTECODE=1`: Enable bytecode compilation
+- `UV_LINK_MODE=copy`: Use copy instead of hardlinks
+
+**Production Stage:**
+- `UV_NO_DEV=1`: Exclude development dependencies
+- `PATH="/app/.venv/bin:$PATH"`: Activate virtual environment
+
+### Version Pinning
+
+UV is pinned to version 0.5.13 for reproducibility. To update:
+
+```dockerfile
+COPY --from=ghcr.io/astral-sh/uv:0.6.0 /uv /uvx /bin/
+```
+
+Check for latest versions at: https://github.com/astral-sh/uv/releases
+
+### Verify Optimizations
+
+After building, verify cache mounts are working:
+
+```bash
+# First build (slow - downloads all dependencies)
+time docker build -t nautobot-mcp:test .
+
+# Make a small code change
+echo "# test" >> README.md
+
+# Second build (fast - uses cached dependencies)
+time docker build -t nautobot-mcp:test .
+```
+
+Expected: Second build should be 5-10x faster.
+
 ## Common Operations
 
 ### View Logs

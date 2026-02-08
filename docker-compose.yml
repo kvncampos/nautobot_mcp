@@ -16,7 +16,7 @@ services:
     environment:
       # Transport mode: stdio or http
       - MCP_TRANSPORT=${MCP_TRANSPORT:-stdio}
-      - MCP_PORT=${MCP_PORT:-8000}
+      - MCP_PORT=${MCP_PORT:-8081}
       
       # Override these if needed
       - PYTHONUNBUFFERED=1
@@ -24,7 +24,7 @@ services:
     
     # Port mapping (only relevant for HTTP mode)
     ports:
-      - "${MCP_PORT:-8000}:8000"
+      - "${MCP_PORT:-8000}:8081"
     
     # Volume mounts for data persistence
     volumes:
