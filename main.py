@@ -436,7 +436,9 @@ Examples:
     try:
         default_port = int(env_port)
     except ValueError:
-        parser.error(f"environment variable MCP_PORT={env_port!r} is not a valid integer")
+        parser.error(
+            f"environment variable MCP_PORT={env_port!r} is not a valid integer"
+        )
 
     parser.add_argument(
         "--port",
