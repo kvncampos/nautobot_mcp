@@ -122,7 +122,7 @@ docker volume ls | grep nautobot-mcp
 docker volume inspect nautobot-mcp-chroma
 ```
 
-For detailed Docker usage, see [DOCKER.md](../DOCKER.md).
+For detailed Docker usage, see [DOCKER.md](docker.md).
 
 ## Project Structure
 
